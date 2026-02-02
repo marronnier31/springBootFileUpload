@@ -18,7 +18,9 @@
 	<select id="list" resultType="Item">
 		<!-- 오라클에서 쓰는 대소 비교표현이 헷갈릴 수가 있어서 ![CDATA[]]를 써준다. 태그로 인식하게 하지 않기위해 -->
 <![CDATA[ 
-
+SELECT id, name, price, description, url FROM item 
+WHERE id > 0  
+ORDER BY id DESC 
 ]]>
 	</select>
 	<select id="getPicture" resultType="String">

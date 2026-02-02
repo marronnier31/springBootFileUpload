@@ -2,6 +2,7 @@ package com.zeus.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.mybatis.spring.annotation.MapperScan;
@@ -61,6 +62,12 @@ public class ItemController {
 		return "item/failed";
 	}
 
+	@GetMapping("/itemList")
+	public void itemList(Model model) throws Exception {
+		List<Item> itemList = itemService.list();
+		model.addAttribute("itemList", itemList);
+	}
+
 	private String uploadFile(String originalName, byte[] fileData) throws Exception {
 		// 절대 중복되지 않는 문자열 생성
 		UUID uid = UUID.randomUUID();
@@ -69,7 +76,8 @@ public class ItemController {
 		// new File("D:/upload", "0aecc135-a28c-41d1-8b81-bfb71ac36f4e_우림.jpg")
 		// D:/upload/0aecc135-a28c-41d1-8b81-bfb71ac36f4e_우림.jpg 내용이 없는 파일명만 생성
 		File target = new File(uploadPath, createdFileName);
-		// (파일내용이 있는 바이트배열)byte[] fileData을 D:/upload/0aecc135-a28c-41d1-8b81-bfb71ac36f4e_우림.jpd에 복사진행
+		// (파일내용이 있는 바이트배열)byte[] fileData을
+		// D:/upload/0aecc135-a28c-41d1-8b81-bfb71ac36f4e_우림.jpd에 복사진행
 		FileCopyUtils.copy(fileData, target);
 		return createdFileName;
 	}
