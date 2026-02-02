@@ -28,45 +28,24 @@
 
 <div class="detail-container">
     <div class="detail-header">
-        <div class="detail-title">${member.name}</div>
+        <div class="detail-title">${item.name}</div>
         <div class="detail-meta">
-            <span><strong>아이디</strong> ${member.id}</span>
-            <span><strong>비밀번호</strong> ${member.pw}</span>
-            <span><strong>작성일:</strong> <fmt:formatDate value="${member.regDate}" pattern="yyyy-MM-dd HH:mm" /></span>
-            <span><strong>번호:</strong> ${member.no}</span>
+            <span><strong>아이디</strong> ${item.id}</span>
+            <span><strong>가격</strong> ${item.price}</span>
         </div>
     </div>
 
     <div class="detail-body">
-    <form:form modelAttribute="member"> 
-   <form:select path="authList[0].auth" disabled="true">
-                <form:option value="" label="=== 선택해 주세요 ===" />
-                <form:option value="ROLE_USER" label="사용자" />
-                <form:option value="ROLE_MEMBER" label="회원" />
-                <form:option value="ROLE_ADMIN" label="관리자" />
-            </form:select>
-            <form:select path="authList[1].auth" disabled="true">
-                <form:option value="" label="=== 선택해 주세요 ===" />
-                <form:option value="ROLE_USER" label="사용자" />
-                <form:option value="ROLE_MEMBER" label="회원" />
-                <form:option value="ROLE_ADMIN" label="관리자" />
-            </form:select>
-            <form:select path="authList[2].auth" disabled="true">
-                <form:option value="" label="=== 선택해 주세요 ===" />
-                <form:option value="ROLE_USER" label="사용자" />
-                <form:option value="ROLE_MEMBER" label="회원" />
-                <form:option value="ROLE_ADMIN" label="관리자" />
-            </form:select>
-       </form:form>
+   <img alt="상품이미지 ${item.name}" src="/item/display?id=${item.id}" width="400">
     </div>
 
     <div class="detail-footer d-flex justify-content-between">
-        <a href="/member/memberList" class="btn btn-outline-secondary btn-custom">목록으로</a>
+        <a href="/item/itemList" class="btn btn-outline-secondary btn-custom">상품목록으로</a>
         
         <div class="d-flex gap-2">
-            <a href="/member/updateForm?no=${member.no}" class="btn btn-primary btn-custom">수정하기</a>
+            <a href="/item/updateForm?id=${item.id}" class="btn btn-primary btn-custom">수정하기</a>
             <%-- 삭제는 보통 JS로 확인 후 진행하므로 간단히 구현 --%>
-            <button type="button" class="btn btn-danger btn-custom" onclick="deletePost(${member.no})">삭제하기</button>
+            <button type="button" class="btn btn-danger btn-custom" onclick="deletePost(${item.id})">삭제하기</button>
         </div>
     </div>
 </div>
@@ -74,7 +53,7 @@
 <script>
     function deletePost(no) {
         if(confirm("정말 이 게시글을 삭제하시겠습니까?")) {
-            location.href = "/member/delete?no=" + no;
+            location.href = "/item/delete?id=" + id;
         }
     }
 </script>
