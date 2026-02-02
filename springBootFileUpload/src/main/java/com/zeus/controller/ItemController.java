@@ -85,7 +85,7 @@ public class ItemController {
 		return "item/detail";
 	}
 
-	// 화면을 요청하는 것이 아니고, 데이터를 보내줄 것을 요청. 
+	// 화면을 요청하는 것이 아니고, 데이터를 보내줄 것을 요청.
 	@ResponseBody
 	@RequestMapping("/display")
 	public ResponseEntity<byte[]> itemDisplay(Item item) throws Exception {
@@ -93,7 +93,7 @@ public class ItemController {
 		// 파일을 읽기위한 스트링
 		InputStream in = null;
 		ResponseEntity<byte[]> entity = null;
-		
+
 		String url = itemService.getPicture(item);
 		log.info("FILE NAME: " + url);
 		try {
@@ -104,13 +104,13 @@ public class ItemController {
 			MediaType mType = getMediaType(formatName);
 			// 클라이언트 <-> 서버(header, body)
 			HttpHeaders headers = new HttpHeaders();
-			//이미지파일을 inputStream으로 가져온다.
+			// 이미지파일을 inputStream으로 가져온다.
 			in = new FileInputStream(uploadPath + File.separator + url);
 			// 이미지파일타입이 null이 아니라면, 헤더에 이미지 타입을 저장
 			if (mType != null) {
 				headers.setContentType(mType);
 			}
-			//IOUtils.toByteArray(in) : inputStream에 저장된 파일을 byte[] 변환한다.
+			// IOUtils.toByteArray(in) : inputStream에 저장된 파일을 byte[] 변환한다.
 			entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), headers, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -119,6 +119,42 @@ public class ItemController {
 			in.close();
 		}
 		return entity;
+	}
+
+	@GetMapping("/updateForm")
+	public String itemUpdateForm(Item i, Model model) throws Exception {
+		log.info("updateForm item = " + i.toString());
+		Item item = this.itemService.read(i);
+		model.addAttribute(item);
+		return "item/updateForm";
+	}
+
+	@PostMapping("/update")
+	public String itemUpdate(Item item, Model model) throws Exception {
+		log.info("update item = " + item.toString());
+		MultipartFile file = item.getPicture();
+		String oldUrl = null;
+		if (file != null && file.getSize() > 0) {
+			// 기존의 있는 외부저장소에 있는 파일을 삭제
+			Item oldItem = itemService.read(item);
+			oldUrl = oldItem.getUrl();
+			// 새로운 업로드 이미지파일
+			log.info("originalName: " + file.getOriginalFilename());
+			log.info("size: " + file.getSize());
+			log.info("contentType: " + file.getContentType());
+			String createdFileName = uploadFile(file.getOriginalFilename(), file.getBytes());
+			item.setUrl(createdFileName);
+			
+		}
+		int count = itemService.update(item);
+		if (count > 0) {
+			//테이블
+			if(oldUrl != null) deleteFile(oldUrl);
+			model.addAttribute("message", "%s 상품수정이 성공되었습니다.".formatted(item.getName()));
+			return "item/success";
+		}
+		model.addAttribute("message", "%s 상품수정이 실패되었습니다.".formatted(item.getName()));
+		return "item/failed";
 	}
 
 	private MediaType getMediaType(String form) {
@@ -151,4 +187,13 @@ public class ItemController {
 		return createdFileName;
 	}
 
+	// 외부저장소 자료업로드 파일명생성후 저장
+	// D:/upload/"../window/system.ini" 디렉토리 탈출공격(path tarversal)
+	private boolean deleteFile(String fileName) throws Exception {
+		if (fileName.contains("..")) {
+			throw new IllegalArgumentException("잘못된 경로 입니다.");
+		}
+		File file = new File(uploadPath, fileName);
+		return (file.exists() == true) ? (file.delete()) : (false);
+	}
 }
