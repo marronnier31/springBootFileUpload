@@ -21,7 +21,8 @@
 		WHERE id = #{id}
 	</update>
 	<delete id="delete">
-
+		DELETE FROM item
+		WHERE id = #{id}
 	</delete>
 	<select id="list" resultType="Item">
 		<!-- 오라클에서 쓰는 대소 비교표현이 헷갈릴 수가 있어서 ![CDATA[]]를 써준다. 태그로 인식하게 하지 않기위해 -->

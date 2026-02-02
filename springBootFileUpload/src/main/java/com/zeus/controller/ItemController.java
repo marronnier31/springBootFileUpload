@@ -144,16 +144,30 @@ public class ItemController {
 			log.info("contentType: " + file.getContentType());
 			String createdFileName = uploadFile(file.getOriginalFilename(), file.getBytes());
 			item.setUrl(createdFileName);
-			
+
 		}
 		int count = itemService.update(item);
 		if (count > 0) {
-			//테이블
-			if(oldUrl != null) deleteFile(oldUrl);
+			// 테이블에 수정내용이 완료가 되고 그리고 나서 이전 이미지 파일을 삭제
+			if (oldUrl != null) deleteFile(oldUrl);
 			model.addAttribute("message", "%s 상품수정이 성공되었습니다.".formatted(item.getName()));
 			return "item/success";
 		}
 		model.addAttribute("message", "%s 상품수정이 실패되었습니다.".formatted(item.getName()));
+		return "item/failed";
+	}
+
+	@GetMapping("/delete")
+	public String itemDelete(Item item, Model model) throws Exception {
+		log.info("delete item = " + item.toString());
+		String url = itemService.getPicture(item);
+		int count = itemService.delete(item);
+		if (count > 0) {
+			if (url != null) deleteFile(url);
+			model.addAttribute("message", "%d 상품삭제가 성공되었습니다.".formatted(item.getId()));
+			return "item/success";
+		}
+		model.addAttribute("message", "%d 상품삭제이 실패되었습니다.".formatted(item.getId()));
 		return "item/failed";
 	}
 
